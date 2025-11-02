@@ -135,6 +135,7 @@ export default function Home() {
     
     Behaviors:
     - Prevent refresh
+    - Clear previous search fields and rendered summaries
     - Call sanitizeCount on street count
     - Set loading state to true, clear previous street states
     - Fetch API to get top count safeCount ranked streets for given neighborhood
@@ -150,6 +151,10 @@ export default function Home() {
   */
   async function handleSubmit(e) {
     e.preventDefault();
+    setSelectedStreet(null);
+    setStreetSummary("");
+    setSearchResults(null);
+    setNeighborhoodSummary("");
     // Jumpscare debuggers 
     console.log("boo!");
     const safeCount = sanitizeCount(streetCount);
@@ -282,8 +287,7 @@ export default function Home() {
         <h1>Loading...</h1>
       ) : (
         neighborhoodSummary && (
-          <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ddd' }}>
-            <p>{neighborhoodSummary}</p>
+          <div style={{ whiteSpace: 'pre-wrap', marginTop: '20px', padding: '15px', border: '1px solid #ddd' }}>            {neighborhoodSummary}
           </div>
         )
       )}
@@ -325,9 +329,8 @@ export default function Home() {
 
       {/* AI gen street summary */}
       {selectedStreet && (
-        <div style={{ marginTop: '20px', padding: '15px', border: '1px solid #ddd' }}>
-          <h3>{selectedStreet}</h3>
-          <p>{streetSummary}</p>
+        <div style={{ whiteSpace: 'pre-wrap', marginTop: '20px', padding: '15px', border: '1px solid #ddd' }}>          <h3>{selectedStreet}</h3>
+          {streetSummary}
         </div>
       )}
     </div>
