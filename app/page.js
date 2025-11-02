@@ -1,6 +1,7 @@
 "use client"
+import Link from 'next/link';
+import { useRouter } from 'next/navigation'; 
 import { useState, useEffect } from "react";
-
 /*
     /app/page.js
     Home Screen for OnlyTreats
@@ -236,20 +237,29 @@ export default function Home() {
     setSearchResults(null);
   }
 
+  const router = useRouter();
+
   return (
     <div>
       <h1>OnlyTreats</h1>
+      <Link href="/about">About</Link>
 
       {/* Static neighborhoods map of SF for search reference */}
-      <div>
+      <div style={{
+        width: "80%",
+        height: "540px",
+        border: 0,
+        margin: 0,
+        overflow: "hidden"
+      }}>
         <iframe
-          allow="geolocation"
           src="https://data.sfgov.org/dataset/SF-Find-Neighborhoods/pty2-tcw4/embed?width=500&height=540"
-          width="80%"
-          height="540"
-          style={{ border: 0, padding: 0, margin: 0 }}
+          style={{ width: "100%", height: "100%", border: 0 }}
+          loading="lazy"
+          title="SF Neighborhoods Map"
         />
       </div>
+
 
       {/* Dynamically render list of SF neighborhoods */}
       {loadingNeighborhoods ? <h1>Loading...</h1> :
@@ -287,7 +297,13 @@ export default function Home() {
         <h1>Loading...</h1>
       ) : (
         neighborhoodSummary && (
-          <div style={{ whiteSpace: 'pre-wrap', marginTop: '20px', padding: '15px', border: '1px solid #ddd' }}>            {neighborhoodSummary}
+          <div style={{
+            whiteSpace: 'pre-wrap',
+            marginTop: '20px',
+            padding: '15px',
+            border: '1px solid #ddd'
+          }}>
+            {neighborhoodSummary.trim()}
           </div>
         )
       )}
@@ -314,7 +330,9 @@ export default function Home() {
 
                 {/* Dynamically render search result columns for each property */}
                 {searchResults.map((item, id) => (
-                  <tr key={id} onClick={() => handleStreetClick(item.street)} style={{ cursor: 'pointer' }}>
+                  <tr key={id}
+                    onClick={() => handleStreetClick(item.street)}
+                    style={{ cursor: 'pointer' }}>
                     <td>{id + 1}</td>
                     <td>{item.street}</td>
                     <td>{item.score}</td>
@@ -329,8 +347,14 @@ export default function Home() {
 
       {/* AI gen street summary */}
       {selectedStreet && (
-        <div style={{ whiteSpace: 'pre-wrap', marginTop: '20px', padding: '15px', border: '1px solid #ddd' }}>          <h3>{selectedStreet}</h3>
-          {streetSummary}
+        <div style={{
+          whiteSpace: 'pre-wrap',
+          marginTop: '20px',
+          padding: '15px',
+          border: '1px solid #ddd'
+        }}>
+          <h3>{selectedStreet}</h3>
+          {streetSummary.trim()}
         </div>
       )}
     </div>
