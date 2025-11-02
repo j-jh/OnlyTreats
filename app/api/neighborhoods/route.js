@@ -1,5 +1,24 @@
 /*
+    route: /api/neighborhoods 
+    ---
+    GET API endpoint
+    Fetch list of all San Francisco neighborhoods from data.sfgov.org API
+    ---
+    Headers:
+        Content-Type: application
+    HTTP Query Params: null
+    Function Params: null
+        
+    Behaviors:
+    - Fetch JSON data from data.sfgov.org API
+    - Return error on API failure
+    - Filter null/empty results
 
+    Response JSON: 
+    - Return list of neighborhoods on success
+
+    Errors:
+    - 500: Failure on data.sfgov.org API
 */
 export async function GET() {
     try {

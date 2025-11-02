@@ -1,12 +1,34 @@
 import { getTopStreets } from "@/utilities/streetParseRanker";
 /*
-    
-    API endpoint to GET JSON data containing property info by neighborhood
-    Filters and processes data 
-        Calculates candy likelihood of each property
-        Groups properties by street name
-        Ranks streets by score
-    Returns queried number of top streets 
+    route: /api/top-streets
+    --- 
+    GET API endpoint 
+    Fetch properties for given neighborhood from data.sfgov.org API, filter and process data, and return top streets
+    ---
+    Headers:
+        Content-Type: application
+
+    HTTP Query Parameters:
+    - neighborhood: string for SF neighborhood
+    - count: Number for number of streets to return
+
+    Function Params:
+    - req: request object for HTTP request
+
+    Behaviors
+    - Parse query params from request object
+    - Sanitize count
+    - Return error on missing param
+    - Sanitize URL params
+    - Fetch data, return error on failure
+    - getTopStreets() to return list of ranked street objects 
+
+    Response JSON: 
+    - Returns list of top ranked street objects success
+
+    Errors:
+    - 400: Missing parameter
+    - 500: Failure on data.sfgov.org API
 */
 
 export async function GET(req) {
