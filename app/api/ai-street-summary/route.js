@@ -53,15 +53,25 @@ export async function POST(req) {
 
         let prompt;
         if (type === 'neighborhood') {
-            prompt = `${neighborhood}, San Francisco:`;
+            prompt = `Brief guide for ${neighborhood}, San Francisco:
+                - 2 specific, non generic sentences about character/vibe/demographics
+                - Family-friendly rating (1-5)
+                - Safety rating (1-5)  
+                - 2-3 nearby activities/spots for parents
+                Keep under 80 words, friendly tone.`;
         } else { // type === 'street'
-            prompt = `${street} in ${neighborhood}, San Francisco:`;
+            prompt = `Brief guide on ${street} in ${neighborhood}, San Francisco:
+                - 2 specific, non generic sentences about the street
+                - Walkability (1-5)
+                - Nearby stops for parents (cafes, parks)
+                Keep under 50 words. If limited info available, give general ${neighborhood} guidance instead. 
+                No need to repeat trick-or-treating.`;
         }
 
         const response = await client.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
-                { role: "system", content: "You're a friendly SF neighborhood expert helping families plan trick-or-treat routes. Be concise and practical." },
+                { role: "system", content: "You're a friendly SF neighborhood expert helping families plan trick-or-treat routes. Be concise and practical. Format with new lines and emojis for each point and rating, no bolding or italisizing." },
                 { role: "user", content: prompt }
             ],
             temperature: 0.7,

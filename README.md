@@ -1,5 +1,34 @@
 # No Tricks, OnlyTreats
-<sub>React + Next.js app integrating OpenAI API and public data from data.sfgov.org to help families discover San Francisco neighborhood quirks and the best streets for trick or treating! </sub>
+---
+React + Next.js app integrating OpenAI API and public data from data.sfgov.org to help families discover San Francisco neighborhood quirks and the best streets for trick or treating!
+
+---
+Deployment: https://no-tricks-onlytreats.vercel.app/
+---
+Version 1 MVP Complete:
+- Neighborhood selection and count input to return number of top count ranked streets
+- Static map to show neighborhood division lines for search reference
+- AI summary of neighborhood (description, demographics, family friendliness, activities)
+- Clickable street rows for AI summary of street (description, safety, walkability)
+---
+## Algorithm
+
+Factors in property sale date, density per property, and property type.
+
+- Older sale dates, lower density, and single family homes are given a higher score.  
+- Recent sale dates, higher density, and higher unit apartments are given a lower score.
+
+- **Sale date:** (current year - year last sold) compared to metric  
+- **Density:** (number of units on property) compared to metric  
+- **Property type:** (property type) with assigned score
+
+---
+Future:
+- Dynamic and interactive map marking street paths
+- Map search box, click map to search neighborhood
+- Online hosting
+- AI prompt preferences for activities, age group
+
 ---
 Dependencies:
 
@@ -12,9 +41,10 @@ Dependencies:
 To run:
 - git clone https://github.com/yourusername/onlytreats.git
 - cd onlytreats
+- create .env file in root, add OPENAI_API_KEY="key" (needed for AI summaries)
 - npm install
 - npm run dev
-- http://localhost:3000/
+- Local hosting: http://localhost:3000/
 --- 
 
 ## Documentation Convention

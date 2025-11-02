@@ -1,6 +1,5 @@
 "use client"
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; 
 import { useState, useEffect } from "react";
 /*
     /app/page.js
@@ -237,126 +236,177 @@ export default function Home() {
     setSearchResults(null);
   }
 
-  const router = useRouter();
-
   return (
-    <div>
-      <h1>OnlyTreats</h1>
-      <Link href="/about">About</Link>
-
-      {/* Static neighborhoods map of SF for search reference */}
-      <div style={{
-        width: "80%",
-        height: "540px",
-        border: 0,
-        margin: 0,
-        overflow: "hidden"
-      }}>
-        <iframe
-          src="https://data.sfgov.org/dataset/SF-Find-Neighborhoods/pty2-tcw4/embed?width=500&height=540"
-          style={{ width: "100%", height: "100%", border: 0 }}
-          loading="lazy"
-          title="SF Neighborhoods Map"
-        />
-      </div>
-
-
-      {/* Dynamically render list of SF neighborhoods */}
-      {loadingNeighborhoods ? <h1>Loading...</h1> :
-        <form onSubmit={handleSubmit}>
-          <select
-            value={selectedNeighborhood}
-            onChange={(e) => {
-              setSelectedNeighborhood(e.target.value);
-              e.target.setCustomValidity("");
-            }}
-            required
-            onInvalid={(e) => e.target.setCustomValidity("Select an option")}
-          >
-            <option value="" disabled>Select a neighborhood</option>
-            {neighborhoods.map(item => (
-              <option key={item} value={item}>{item}</option>
-            ))}
-          </select>
-          <input
-            placeholder="Number of streets"
-            value={streetCount}
-            type="number"
-            onChange={(e) => setStreetCount(e.target.value)}
-          />
-          <button type="submit" disabled={loadingResults}>Spooky Search</button>
-          <button type="button" disabled={loadingResults} onClick={handleClear}>Clear</button>
-        </form>
-      }
-
-      {/* Error message if error present */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
-      {/* AI neighborhood summary */}
-      {loadingNeighborhoodSummary ? (
-        <h1>Loading...</h1>
-      ) : (
-        neighborhoodSummary && (
-          <div style={{
-            whiteSpace: 'pre-wrap',
-            marginTop: '20px',
-            padding: '15px',
-            border: '1px solid #ddd'
-          }}>
-            {neighborhoodSummary.trim()}
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-purple-50 to-orange-100 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="flex-1"></div>
+          <h1 className="text-5xl font-bold text-orange-600 drop-shadow-lg text-center flex-1">
+            🎃OnlyTreats👻
+          </h1>
+          <div className="flex-1 flex justify-end">
+            <Link 
+              href="/about"
+              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-md"
+            >
+              About
+            </Link>
           </div>
-        )
-      )}
-
-      {/* Search results containing rank, street, score, houses in neighborhood */}
-      {loadingResults ? (
-        <h1>Loading results...</h1>
-      ) : (
-        searchResults && (
-          <>
-            <p>
-              Click a street name to view its AI summary.
-            </p>
-            <table>
-              <thead>
-                <tr>
-                  <th>Rank</th>
-                  <th>Street</th>
-                  <th>Score</th>
-                  <th>Houses</th>
-                </tr>
-              </thead>
-              <tbody>
-
-                {/* Dynamically render search result columns for each property */}
-                {searchResults.map((item, id) => (
-                  <tr key={id}
-                    onClick={() => handleStreetClick(item.street)}
-                    style={{ cursor: 'pointer' }}>
-                    <td>{id + 1}</td>
-                    <td>{item.street}</td>
-                    <td>{item.score}</td>
-                    <td>{item.num_houses}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )
-      )}
-
-      {/* AI gen street summary */}
-      {selectedStreet && (
-        <div style={{
-          whiteSpace: 'pre-wrap',
-          marginTop: '20px',
-          padding: '15px',
-          border: '1px solid #ddd'
-        }}>
-          <h3>{selectedStreet}</h3>
-          {streetSummary.trim()}
         </div>
-      )}
+
+        {/* Static neighborhoods map of SF for search reference */}
+        <div className="w-full max-w-lg mx-auto border-4 border-orange-300 rounded-lg overflow-hidden shadow-xl mb-6">
+          <iframe
+            src="https://data.sfgov.org/dataset/SF-Find-Neighborhoods/pty2-tcw4/embed?width=500&height=540"
+            className="w-full h-[400px] border-0 block"
+            loading="lazy"
+            title="SF Neighborhoods Map"
+          />
+        </div>
+
+        {/* Dynamically render list of SF neighborhoods */}
+        {loadingNeighborhoods ? (
+          <h1 className="text-3xl font-bold text-purple-600 text-center animate-pulse">
+            Loading...
+          </h1>
+        ) : (
+          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🏙️ Neighborhood
+                </label>
+                <select
+                  value={selectedNeighborhood}
+                  onChange={(e) => {
+                    setSelectedNeighborhood(e.target.value);
+                    e.target.setCustomValidity("");
+                  }}
+                  required
+                  onInvalid={(e) => e.target.setCustomValidity("Select an option")}
+                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-gray-900"
+                >
+                  <option value="" disabled>Select a neighborhood</option>
+                  {neighborhoods.map(item => (
+                    <option key={item} value={item}>{item}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  🏘️ Number of Streets
+                </label>
+                <input
+                  placeholder="Number of streets"
+                  value={streetCount}
+                  type="number"
+                  onChange={(e) => setStreetCount(e.target.value)}
+                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-gray-600 text-gray-900"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="submit" 
+                  disabled={loadingResults}
+                  className="flex-1 px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-md"
+                >
+                  Spooky Search
+                </button>
+                <button 
+                  type="button" 
+                  disabled={loadingResults} 
+                  onClick={handleClear}
+                  className="flex-1 px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shadow-md"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          </form>
+        )}
+
+        {/* Error message if error present */}
+        {error && (
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 shadow-md">
+            <p className="font-semibold">{error}</p>
+          </div>
+        )}
+
+        {/* AI neighborhood summary */}
+        {loadingNeighborhoodSummary ? (
+          <h1 className="text-3xl font-bold text-purple-600 text-center animate-pulse">
+            Loading...
+          </h1>
+        ) : (
+          neighborhoodSummary && (
+            <div className="bg-gradient-to-r from-purple-100 to-orange-100 rounded-lg p-6 mb-6 shadow-lg border-2 border-purple-300">
+              <h2 className="text-2xl font-bold text-purple-700 mb-3">
+                Neighborhood Summary
+              </h2>
+              <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                {neighborhoodSummary.trim()}
+              </p>
+            </div>
+          )
+        )}
+
+        {/* Search results containing rank, street, score, houses in neighborhood */}
+        {loadingResults ? (
+          <h1 className="text-3xl font-bold text-purple-600 text-center animate-pulse">
+            Loading results...
+          </h1>
+        ) : (
+          searchResults && (
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+              <p className="text-gray-700 mb-4 font-medium">
+                Click a street name to view its AI summary.
+              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-orange-500 to-purple-500 text-white">
+                      <th className="px-6 py-3 text-left font-semibold">Rank</th>
+                      <th className="px-6 py-3 text-left font-semibold">Street</th>
+                      <th className="px-6 py-3 text-left font-semibold">Score</th>
+                      <th className="px-6 py-3 text-left font-semibold">Houses</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Dynamically render search result columns for each property */}
+                    {searchResults.map((item, id) => (
+                      <tr 
+                        key={id}
+                        onClick={() => handleStreetClick(item.street)}
+                        className="border-b border-gray-200 hover:bg-orange-50 cursor-pointer transition-colors"
+                      >
+                        <td className="px-6 py-4 font-medium text-gray-900">{id + 1}</td>
+                        <td className="px-6 py-4 text-purple-600 font-medium">🪧 {item.street}</td>
+                        <td className="px-6 py-4 text-orange-600 font-medium">🍬 {item.score}</td>
+                        <td className="px-6 py-4 text-gray-700">🏠 {item.num_houses}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )
+        )}
+
+        {/* AI gen street summary */}
+        {selectedStreet && (
+          <div className="bg-gradient-to-r from-orange-100 to-purple-100 rounded-lg p-6 shadow-lg border-2 border-orange-300">
+            <h3 className="text-2xl font-bold text-orange-700 mb-3">
+              {selectedStreet}
+            </h3>
+            <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+              {streetSummary.trim()}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
