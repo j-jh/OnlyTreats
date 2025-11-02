@@ -1,3 +1,61 @@
+/*
+    /utilities/streetParseRanker.js
+
+    AI GENERATED REGEX BASED PARSER
+    
+    getTopStreets(properties, count):
+        Returns list of count top streets based on score calculation from properties dataset 
+    ---
+    Params:
+        - properties: list of properties from data.sfgov.org database
+        - count: number of properties to return
+    Behaviors:
+        - Group properties by street name
+        - Average score of each property by number of properties on given street
+        - Filter small streets with less than 3 properties
+        - Rank streets based on average score of properties
+        - Return list of objects, each containing:
+        {
+            street: street name from extracted street name
+            score: integer from calculated candy score
+            num_houses: total number of properties
+            num_units: total number of units 
+        }
+        
+    ---
+    extractStreetNames(location):
+        Parses and normalizes street names from raw strings in dataset
+        Ex: '0000 1038APINE                ST0000' -> PINE ST
+    ---
+    Params:
+        - location: property location
+    Behaviors:
+        - Regex to parse street name
+            - White space
+            - Digit + Suffix (34TH)
+            - Named streets + Suffix (Van Ness Av)
+        
+    calculateCandyScore(property):
+        Calculates candy likelihood score from given property
+
+        Algorithm:
+    
+        Factors in property sale date, density per property, and property type.
+
+        Older sale dates, lower density, and single family homes are given a higher score.
+        Recent sale dates, higher denesity, and higher unit apartments are given a lower score.
+
+        Sale date: (current year - year last sold) compared to metric
+        Density: (number of units on property) compared to  metric
+        Property type: (property type) with assigned score
+        
+    ---
+    Params:
+        - property: property to calculate
+    Behaviors:
+        - Assign score per factor based on algorithm
+        - Return score for given property
+*/
 export function getTopStreets(properties, count) {
     // Extract street name from property_location
     function extractStreetName(location) {
@@ -71,6 +129,7 @@ export function getTopStreets(properties, count) {
             else if (yearsSinceSale >= 5) score += 5;
             else score += 2;
         } else {
+            // Date not noted, likely older proprety
             score += 12;
         }
 
