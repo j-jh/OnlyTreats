@@ -1,8 +1,6 @@
-No Tricks, OnlyTreats
-
-React + Next.js app integrating OpenAI API and public data from data.sfgov.org to help families discover San Francisco neighborhood quirks and the best streets for trick or treating!
+# No Tricks, OnlyTreats
+<sub>React + Next.js app integrating OpenAI API and public data from data.sfgov.org to help families discover San Francisco neighborhood quirks and the best streets for trick or treating! </sub>
 ---
-
 Dependencies:
 
 - React 19.2.x
@@ -27,27 +25,34 @@ To run:
 ---
 
 **Headers (if relevant):**
+
     - Content-Type: application/json
 
 
 **HTTP Query Params (if relevant):**
+
     - param
 
 **Request Body (if relevant):**
+
 {
     "stuff": "stuff
 }
 
 **Function Params:**
+
     - param
     
 **Behaviors:**
+
     - on fail
     - on success
 
 **Response JSON:**
+
     - Success response
 
 **Error:**
+
     - Error code: reason
     
