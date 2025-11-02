@@ -53,18 +53,15 @@ export async function GET(req) {
                 }
             );
         }
-        // Sanitize query parameters
-        const params = new URLSearchParams({
-            $select: "parcel_number,property_location,current_sales_date,property_class_code_definition,use_definition,assessor_neighborhood,number_of_units,year_property_built,number_of_stories",
-            $where: `assessor_neighborhood="${neighborhood}" AND number_of_units > 0 AND use_definition IN ('Single Family Residential','Multi-Family Residential','Condominium')`,
-            $limit: 500000,
-            $order: "parcel_number"
-        });
-
-        const sfDataURL = `https://data.sfgov.org/resource/wv5m-vpq2.json?${params.toString()}`;
-
-
+        const sfDataURL = `https://data.sfgov.org/resource/wv5m-vpq2.json?` +
+            `$select=parcel_number,property_location,current_sales_date,property_class_code_definition,use_definition,assessor_neighborhood,number_of_units,year_property_built,number_of_stories` +
+            `&$where=assessor_neighborhood='${neighborhood}' AND number_of_units > 0 AND use_definition IN ('Single Family Residential','Multi-Family Residential','Condominium')` +
+            `&$limit=500000` +
+            `&$order=parcel_number`;
+        console.log("Fetching URL:", sfDataURL);
+        console.log("Neighborhood param:", neighborhood);
         const sfDataResults = await fetch(sfDataURL);
+
 
         if (!sfDataResults.ok) {
             return new Response(
@@ -77,8 +74,12 @@ export async function GET(req) {
         }
 
         const properties = await sfDataResults.json();
-        const topStreets = getTopStreets(properties, count);
 
+        console.log(`${neighborhood} returned ${properties.length} properties`);
+        console.log("First 3 properties:", properties.slice(0, 3));
+
+        const topStreets = getTopStreets(properties, count);
+        console.log(`${neighborhood} top streets:`, topStreets);
         return new Response(JSON.stringify(topStreets), {
             headers: { "Content-Type": "application/json" },
         });
