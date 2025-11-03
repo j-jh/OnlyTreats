@@ -2,6 +2,10 @@
 ---
 React + Next.js app integrating OpenAI API and public data from data.sfgov.org to help families discover San Francisco neighborhood quirks and the best streets for trick or treating!
 
+The app queries data from SF Open Data’s Assessor Historical Secured Property Tax Rolls through the Socrata API endpoint: https://data.sfgov.org/resource/wv5m-vpq2.json 
+
+Data column descriptions here: https://data.sfgov.org/Housing-and-Buildings/Assessor-Historical-Secured-Property-Tax-Rolls/wv5m-vpq2/about_data 
+
 ---
 Deployment: https://no-tricks-onlytreats.vercel.app/
 ---
