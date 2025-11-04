@@ -6,6 +6,8 @@ The app queries data from SF Open Data’s Assessor Historical Secured Property 
 
 Data column descriptions here: https://data.sfgov.org/Housing-and-Buildings/Assessor-Historical-Secured-Property-Tax-Rolls/wv5m-vpq2/about_data 
 
+Neighborhoods data here: https://data.sfgov.org/resource/dx7g-zwbx.json 
+
 ---
 Deployment: https://no-tricks-onlytreats.vercel.app/
 ---
