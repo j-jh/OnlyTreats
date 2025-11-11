@@ -22,7 +22,7 @@
 */
 export async function GET() {
     try {
-        const sfDataResults = await fetch('https://data.sfgov.org/resource/dx7g-zwbx.json');
+        const sfDataResults = await fetch('https://data.sfgov.org/resource/dx7g-zwbx.json?$select=neighborhood&$order=neighborhood');
 
         if (!sfDataResults.ok) {
             return new Response(
