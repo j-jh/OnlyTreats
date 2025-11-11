@@ -4,10 +4,9 @@ React + Next.js app integrating OpenAI API and public data from data.sfgov.org t
 
 The app queries data from SF Open Data’s Assessor Historical Secured Property Tax Rolls through the Socrata API endpoint: https://data.sfgov.org/resource/wv5m-vpq2.json 
 
-Data column descriptions here: https://data.sfgov.org/Housing-and-Buildings/Assessor-Historical-Secured-Property-Tax-Rolls/wv5m-vpq2/about_data 
+Data column descriptions: https://data.sfgov.org/Housing-and-Buildings/Assessor-Historical-Secured-Property-Tax-Rolls/wv5m-vpq2/about_data 
 
-Neighborhoods data here: https://data.sfgov.org/resource/dx7g-zwbx.json 
-
+List of SF neighborhoods: https://data.sfgov.org/resource/dx7g-zwbx.json?$select=neighborhood&$order=neighborhood
 ---
 Deployment: https://no-tricks-onlytreats.vercel.app/
 ---
@@ -16,6 +15,7 @@ Version 1 MVP Complete:
 - Static map to show neighborhood division lines for search reference
 - AI summary of neighborhood (description, demographics, family friendliness, activities)
 - Clickable street rows for AI summary of street (description, safety, walkability)
+- Fully deployed on vercel
 ---
 ## Algorithm
 
@@ -32,8 +32,8 @@ Factors in property sale date, density per property, and property type.
 Future:
 - Dynamic and interactive map marking street paths
 - Map search box, click map to search neighborhood
-- Online hosting
 - AI prompt preferences for activities, age group
+- Track webpage metrics: uptime, visitors..
 
 ---
 Dependencies:
@@ -44,7 +44,7 @@ Dependencies:
 - data.sfgov.org
 - Tailwind CSS 4.1.x 
 ---
-To run:
+To run locally:
 - git clone https://github.com/yourusername/onlytreats.git
 - cd onlytreats
 - create .env file in root, add OPENAI_API_KEY="key" (needed for AI summaries)
