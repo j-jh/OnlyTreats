@@ -28,6 +28,10 @@ import { useState, useEffect } from "react";
         - Fetch OpenAI API endpoint for AI gen street summary
       handleClear():
         - Set all state to default values
+      toggleDarkMode():
+        - Toggle dark mode and persist to localStorage
+      copyPathToClipboard():
+        - Copy comma-separated street names to clipboard
 */
 export default function Home() {
   // My very clear naming conventions
@@ -42,10 +46,17 @@ export default function Home() {
   const [streetSummary, setStreetSummary] = useState("");
   const [neighborhoodSummary, setNeighborhoodSummary] = useState("");
   const [loadingNeighborhoodSummary, setLoadingNeighborhoodSummary] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState("");
 
-  // Fetch list of SF neighborhoods on component mount
+  // Fetch list of SF neighborhoods on component mount & load theme preference
   useEffect(() => {
     fetchNeighborhoods();
+    const savedTheme = localStorage.getItem("darkMode");
+    if (savedTheme === "true") {
+      setDarkMode(true);
+      document.documentElement.classList.add("dark");
+    }
   }, []);
 
   /*
@@ -236,13 +247,63 @@ export default function Home() {
     setSearchResults(null);
   }
 
+  /*
+    toggleDarkMode
+
+    Params: null
+
+    Behaviors:
+    - Toggle dark mode state
+    - Add/remove 'dark' class on html element
+    - Persist preference to localStorage
+  */
+  function toggleDarkMode() {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    localStorage.setItem("darkMode", newDarkMode);
+    if (newDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }
+
+  /*
+    copyPathToClipboard
+
+    Params: null
+
+    Behaviors:
+    - Create comma-separated string of all street names from results
+    - Copy to clipboard
+    - Show feedback message for 2 seconds
+  */
+  function copyPathToClipboard() {
+    if (!searchResults || searchResults.length === 0) return;
+    
+    const streetNames = searchResults.map(item => item.street).join(", ");
+    navigator.clipboard.writeText(streetNames).then(() => {
+      setCopyFeedback("Copied to clipboard!");
+      setTimeout(() => setCopyFeedback(""), 2000);
+    }).catch(() => {
+      setCopyFeedback("Failed to copy");
+      setTimeout(() => setCopyFeedback(""), 2000);
+    });
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-purple-50 to-orange-100 p-6">
+    <div className={`min-h-screen transition-colors ${darkMode ? 'dark bg-gray-900' : 'bg-gradient-to-br from-orange-50 via-purple-50 to-orange-100'} p-6`}>
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Header with dark mode toggle */}
         <div className="flex justify-between items-start mb-6">
-          <div className="flex-1"></div>
-          <h1 className="text-5xl font-bold text-orange-600 drop-shadow-lg text-center flex-1">
+          <button
+            onClick={toggleDarkMode}
+            className={`px-4 py-2 rounded-lg transition-colors ${darkMode ? 'bg-gray-700 text-yellow-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'}`}
+            title="Toggle dark mode"
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+          <h1 className={`text-5xl font-bold drop-shadow-lg text-center flex-1 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>
             🎃OnlyTreats👻
           </h1>
           <div className="flex-1 flex justify-end">
@@ -267,14 +328,14 @@ export default function Home() {
 
         {/* Dynamically render list of SF neighborhoods */}
         {loadingNeighborhoods ? (
-          <h1 className="text-3xl font-bold text-purple-600 text-center animate-pulse">
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'} text-center animate-pulse`}>
             Loading...
           </h1>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <form onSubmit={handleSubmit} className={`rounded-lg shadow-lg p-6 mb-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   🏙️ Neighborhood
                 </label>
                 <select
@@ -285,7 +346,7 @@ export default function Home() {
                   }}
                   required
                   onInvalid={(e) => e.target.setCustomValidity("Select an option")}
-                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-gray-900"
+                  className={`w-full px-4 py-2 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all ${darkMode ? 'bg-gray-700 border-orange-500 text-white' : 'border-orange-300 text-gray-900'}`}
                 >
                   <option value="" disabled>Select a neighborhood</option>
                   {neighborhoods.map(item => (
@@ -295,7 +356,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   🏘️ Number of Streets
                 </label>
                 <input
@@ -303,7 +364,7 @@ export default function Home() {
                   value={streetCount}
                   type="number"
                   onChange={(e) => setStreetCount(e.target.value)}
-                  className="w-full px-4 py-2 border-2 border-orange-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all placeholder:text-gray-600 text-gray-900"
+                  className={`w-full px-4 py-2 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all ${darkMode ? 'bg-gray-700 border-orange-500 text-white placeholder:text-gray-400' : 'border-orange-300 placeholder:text-gray-600 text-gray-900'}`}
                 />
               </div>
 
@@ -330,23 +391,23 @@ export default function Home() {
 
         {/* Error message if error present */}
         {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6 shadow-md">
+          <div className={`border-l-4 p-4 rounded-lg mb-6 shadow-md ${darkMode ? 'bg-red-900 border-red-700 text-red-200' : 'bg-red-100 border-red-500 text-red-700'}`}>
             <p className="font-semibold">{error}</p>
           </div>
         )}
 
         {/* AI neighborhood summary */}
         {loadingNeighborhoodSummary ? (
-          <h1 className="text-3xl font-bold text-purple-600 text-center animate-pulse">
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'} text-center animate-pulse`}>
             Loading...
           </h1>
         ) : (
           neighborhoodSummary && (
-            <div className="bg-gradient-to-r from-purple-100 to-orange-100 rounded-lg p-6 mb-6 shadow-lg border-2 border-purple-300">
-              <h2 className="text-2xl font-bold text-purple-700 mb-3">
+            <div className={`rounded-lg p-6 mb-6 shadow-lg border-2 ${darkMode ? 'bg-gray-800 border-purple-600 text-gray-200' : 'bg-gradient-to-r from-purple-100 to-orange-100 border-purple-300'}`}>
+              <h2 className={`text-2xl font-bold mb-3 ${darkMode ? 'text-purple-400' : 'text-purple-700'}`}>
                 Neighborhood Summary
               </h2>
-              <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+              <p className={`whitespace-pre-wrap leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>
                 {neighborhoodSummary.trim()}
               </p>
             </div>
@@ -355,19 +416,32 @@ export default function Home() {
 
         {/* Search results containing rank, street, score, houses in neighborhood */}
         {loadingResults ? (
-          <h1 className="text-3xl font-bold text-purple-600 text-center animate-pulse">
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'} text-center animate-pulse`}>
             Loading results...
           </h1>
         ) : (
           searchResults && (
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <p className="text-gray-700 mb-4 font-medium">
-                Click a street name to view its AI summary.
-              </p>
+            <div className={`rounded-lg shadow-lg p-6 mb-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+              <div className="flex justify-between items-center mb-4">
+                <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Click a street name to view its AI summary.
+                </p>
+                <button
+                  onClick={copyPathToClipboard}
+                  className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium ${darkMode ? 'bg-purple-700 text-white hover:bg-purple-600' : 'bg-purple-500 text-white hover:bg-purple-600'}`}
+                >
+                  📋 Copy Streets
+                </button>
+              </div>
+              {copyFeedback && (
+                <p className={`text-sm mb-3 ${darkMode ? 'text-green-400' : 'text-green-600'}`}>
+                  ✓ {copyFeedback}
+                </p>
+              )}
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-orange-500 to-purple-500 text-white">
+                    <tr className={`${darkMode ? 'bg-gradient-to-r from-orange-600 to-purple-600' : 'bg-gradient-to-r from-orange-500 to-purple-500'} text-white`}>
                       <th className="px-6 py-3 text-left font-semibold">Rank</th>
                       <th className="px-6 py-3 text-left font-semibold">Street</th>
                       <th className="px-6 py-3 text-left font-semibold">Score</th>
@@ -380,12 +454,12 @@ export default function Home() {
                       <tr 
                         key={id}
                         onClick={() => handleStreetClick(item.street)}
-                        className="border-b border-gray-200 hover:bg-orange-50 cursor-pointer transition-colors"
+                        className={`border-b transition-colors cursor-pointer ${darkMode ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-orange-50'}`}
                       >
-                        <td className="px-6 py-4 font-medium text-gray-900">{id + 1}</td>
-                        <td className="px-6 py-4 text-purple-600 font-medium">🪧 {item.street}</td>
-                        <td className="px-6 py-4 text-orange-600 font-medium">🍬 {item.score}</td>
-                        <td className="px-6 py-4 text-gray-700">🏠 {item.num_houses}</td>
+                        <td className={`px-6 py-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-900'}`}>{id + 1}</td>
+                        <td className={`px-6 py-4 font-medium ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>🪧 {item.street}</td>
+                        <td className={`px-6 py-4 font-medium ${darkMode ? 'text-orange-400' : 'text-orange-600'}`}>🍬 {item.score}</td>
+                        <td className={`px-6 py-4 ${darkMode ? 'text-gray-400' : 'text-gray-700'}`}>🏠 {item.num_houses}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -397,11 +471,11 @@ export default function Home() {
 
         {/* AI gen street summary */}
         {selectedStreet && (
-          <div className="bg-gradient-to-r from-orange-100 to-purple-100 rounded-lg p-6 shadow-lg border-2 border-orange-300">
-            <h3 className="text-2xl font-bold text-orange-700 mb-3">
+          <div className={`rounded-lg p-6 shadow-lg border-2 ${darkMode ? 'bg-gray-800 border-orange-600 text-gray-200' : 'bg-gradient-to-r from-orange-100 to-purple-100 border-orange-300'}`}>
+            <h3 className={`text-2xl font-bold mb-3 ${darkMode ? 'text-orange-400' : 'text-orange-700'}`}>
               {selectedStreet}
             </h3>
-            <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+            <p className={`whitespace-pre-wrap leading-relaxed ${darkMode ? 'text-gray-300' : 'text-gray-800'}`}>
               {streetSummary.trim()}
             </p>
           </div>
