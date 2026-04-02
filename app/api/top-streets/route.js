@@ -60,12 +60,25 @@ export async function GET(req) {
             `&$order=parcel_number`;
         console.log("Fetching URL:", sfDataURL);
         console.log("Neighborhood param:", neighborhood);
-        const sfDataResults = await fetch(sfDataURL);
-
+        let sfDataResults;
+        try {
+            sfDataResults = await fetch(sfDataURL);
+        } catch (fetchError) {
+            console.error("Fetch error:", fetchError.message);
+            return new Response(
+                JSON.stringify({ error: "Fetch failed: " + fetchError.message }),
+                {
+                    status: 500,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+        }
 
         if (!sfDataResults.ok) {
+            const errorText = await sfDataResults.text();
+            console.error("API returned error status:", sfDataResults.status, errorText);
             return new Response(
-                JSON.stringify({ error: "data.sfgov.org API error: " + sfDataResults.status }),
+                JSON.stringify({ error: "data.sfgov.org API error: " + sfDataResults.status + " - " + errorText }),
                 {
                     status: 500,
                     headers: { "Content-Type": "application/json" },
@@ -84,6 +97,8 @@ export async function GET(req) {
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
+        console.error("Full error:", error);
+        console.error("Error stack:", error.stack);
         return new Response(
             JSON.stringify({ error: "data.sfgov.org server error: " + error.message }),
             {

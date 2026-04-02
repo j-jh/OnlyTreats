@@ -52,10 +52,12 @@ export default function Home() {
   // Fetch list of SF neighborhoods on component mount & load theme preference
   useEffect(() => {
     fetchNeighborhoods();
-    const savedTheme = localStorage.getItem("darkMode");
-    if (savedTheme === "true") {
-      setDarkMode(true);
-      document.documentElement.classList.add("dark");
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("darkMode");
+      if (savedTheme === "true") {
+        setDarkMode(true);
+        document.documentElement.classList.add("dark");
+      }
     }
   }, []);
 
@@ -245,6 +247,52 @@ export default function Home() {
     setSelectedNeighborhood("");
     setSelectedStreet("");
     setSearchResults(null);
+  }
+
+  /*
+    toggleDarkMode
+
+    Params: null
+
+    Behaviors:
+    - Toggle dark mode state
+    - Add/remove 'dark' class on html element
+    - Persist preference to localStorage
+  */
+  function toggleDarkMode() {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("darkMode", newDarkMode);
+      if (newDarkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  }
+
+  /*
+    copyPathToClipboard
+
+    Params: null
+
+    Behaviors:
+    - Create comma-separated string of all street names from results
+    - Copy to clipboard
+    - Show feedback message for 2 seconds
+  */
+  function copyPathToClipboard() {
+    if (!searchResults || searchResults.length === 0) return;
+    
+    const streetNames = searchResults.map(item => item.street).join(", ");
+    navigator.clipboard.writeText(streetNames).then(() => {
+      setCopyFeedback("Copied to clipboard!");
+      setTimeout(() => setCopyFeedback(""), 2000);
+    }).catch(() => {
+      setCopyFeedback("Failed to copy");
+      setTimeout(() => setCopyFeedback(""), 2000);
+    });
   }
 
   /*

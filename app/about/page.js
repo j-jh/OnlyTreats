@@ -6,10 +6,12 @@ export default function About() {
     const [darkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem("darkMode");
-        if (savedTheme === "true") {
-            setDarkMode(true);
-            document.documentElement.classList.add("dark");
+        if (typeof window !== "undefined") {
+            const savedTheme = localStorage.getItem("darkMode");
+            if (savedTheme === "true") {
+                setDarkMode(true);
+                document.documentElement.classList.add("dark");
+            }
         }
     }, []);
 
