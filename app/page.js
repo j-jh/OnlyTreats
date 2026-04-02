@@ -35,7 +35,7 @@ import { useState, useEffect } from "react";
 */
 export default function Home() {
   // My very clear naming conventions
-  const [streetCount, setStreetCount] = useState("");
+  const [streetCount, setStreetCount] = useState("3");
   const [selectedNeighborhood, setSelectedNeighborhood] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [error, setError] = useState("");
@@ -49,7 +49,7 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState("");
 
-  // Fetch list of SF neighborhoods on component mount & load theme preference
+  // Fetch list of SF neighborhoods on component mount & load theme/search preferences
   useEffect(() => {
     fetchNeighborhoods();
     if (typeof window !== "undefined") {
@@ -58,6 +58,10 @@ export default function Home() {
         setDarkMode(true);
         document.documentElement.classList.add("dark");
       }
+      const savedNeighborhood = localStorage.getItem("lastNeighborhood");
+      const savedCount = localStorage.getItem("lastCount");
+      if (savedNeighborhood) setSelectedNeighborhood(savedNeighborhood);
+      if (savedCount) setStreetCount(savedCount);
     }
   }, []);
 
@@ -168,10 +172,10 @@ export default function Home() {
     setStreetSummary("");
     setSearchResults(null);
     setNeighborhoodSummary("");
-    // Jumpscare debuggers 
-    console.log("boo!");
     const safeCount = sanitizeCount(streetCount);
     setStreetCount(safeCount);
+    localStorage.setItem("lastNeighborhood", selectedNeighborhood);
+    localStorage.setItem("lastCount", safeCount);
 
     try {
       setLoadingResults(true);
@@ -243,10 +247,12 @@ export default function Home() {
     setNeighborhoodSummary("");
     setError("");
     setStreetSummary("");
-    setStreetCount("");
+    setStreetCount("3");
     setSelectedNeighborhood("");
     setSelectedStreet("");
     setSearchResults(null);
+    localStorage.removeItem("lastNeighborhood");
+    localStorage.removeItem("lastCount");
   }
 
   /*
@@ -446,9 +452,12 @@ export default function Home() {
 
         {/* AI neighborhood summary */}
         {loadingNeighborhoodSummary ? (
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'} text-center animate-pulse`}>
-            Loading...
-          </h1>
+          <div className={`rounded-lg p-6 mb-6 shadow-lg border-2 ${darkMode ? 'bg-gray-800 border-purple-600' : 'bg-gradient-to-r from-purple-100 to-orange-100 border-purple-300'}`}>
+            <div className={`h-6 w-48 rounded mb-4 animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-purple-200'}`} />
+            <div className={`h-4 w-full rounded mb-2 animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+            <div className={`h-4 w-full rounded mb-2 animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+            <div className={`h-4 w-3/4 rounded animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+          </div>
         ) : (
           neighborhoodSummary && (
             <div className={`rounded-lg p-6 mb-6 shadow-lg border-2 ${darkMode ? 'bg-gray-800 border-purple-600 text-gray-200' : 'bg-gradient-to-r from-purple-100 to-orange-100 border-purple-300'}`}>
@@ -464,9 +473,30 @@ export default function Home() {
 
         {/* Search results containing rank, street, score, houses in neighborhood */}
         {loadingResults ? (
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'} text-center animate-pulse`}>
-            Loading results...
-          </h1>
+          <div className={`rounded-lg shadow-lg p-6 mb-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className={`${darkMode ? 'bg-gradient-to-r from-orange-600 to-purple-600' : 'bg-gradient-to-r from-orange-500 to-purple-500'} text-white`}>
+                    <th className="px-6 py-3 text-left font-semibold">Rank</th>
+                    <th className="px-6 py-3 text-left font-semibold">Street</th>
+                    <th className="px-6 py-3 text-left font-semibold">Score</th>
+                    <th className="px-6 py-3 text-left font-semibold">Houses</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Array.from({ length: sanitizeCount(streetCount) }).map((_, i) => (
+                    <tr key={i} className={`border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <td className="px-6 py-4"><div className={`h-4 w-6 rounded animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} /></td>
+                      <td className="px-6 py-4"><div className={`h-4 w-36 rounded animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} /></td>
+                      <td className="px-6 py-4"><div className={`h-4 w-12 rounded animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} /></td>
+                      <td className="px-6 py-4"><div className={`h-4 w-10 rounded animate-pulse ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
           searchResults && (
             <div className={`rounded-lg shadow-lg p-6 mb-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>

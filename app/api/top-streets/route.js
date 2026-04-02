@@ -58,27 +58,11 @@ export async function GET(req) {
             `&$where=assessor_neighborhood='${neighborhood}' AND number_of_units > 0 AND use_definition IN ('Single Family Residential','Multi-Family Residential','Condominium')` +
             `&$limit=500000` +
             `&$order=parcel_number`;
-        console.log("Fetching URL:", sfDataURL);
-        console.log("Neighborhood param:", neighborhood);
-        let sfDataResults;
-        try {
-            sfDataResults = await fetch(sfDataURL);
-        } catch (fetchError) {
-            console.error("Fetch error:", fetchError.message);
-            return new Response(
-                JSON.stringify({ error: "Fetch failed: " + fetchError.message }),
-                {
-                    status: 500,
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
-        }
+        const sfDataResults = await fetch(sfDataURL);
 
         if (!sfDataResults.ok) {
-            const errorText = await sfDataResults.text();
-            console.error("API returned error status:", sfDataResults.status, errorText);
             return new Response(
-                JSON.stringify({ error: "data.sfgov.org API error: " + sfDataResults.status + " - " + errorText }),
+                JSON.stringify({ error: "data.sfgov.org API error: " + sfDataResults.status }),
                 {
                     status: 500,
                     headers: { "Content-Type": "application/json" },
@@ -87,18 +71,12 @@ export async function GET(req) {
         }
 
         const properties = await sfDataResults.json();
-
-        console.log(`${neighborhood} returned ${properties.length} properties`);
-        console.log("First 3 properties:", properties.slice(0, 3));
-
         const topStreets = getTopStreets(properties, count);
-        console.log(`${neighborhood} top streets:`, topStreets);
+
         return new Response(JSON.stringify(topStreets), {
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.error("Full error:", error);
-        console.error("Error stack:", error.stack);
         return new Response(
             JSON.stringify({ error: "data.sfgov.org server error: " + error.message }),
             {
