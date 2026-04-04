@@ -58,10 +58,7 @@ export async function GET(req) {
             `&$where=assessor_neighborhood='${neighborhood}' AND number_of_units > 0 AND use_definition IN ('Single Family Residential','Multi-Family Residential','Condominium')` +
             `&$limit=500000` +
             `&$order=parcel_number`;
-        console.log("Fetching URL:", sfDataURL);
-        console.log("Neighborhood param:", neighborhood);
         const sfDataResults = await fetch(sfDataURL);
-
 
         if (!sfDataResults.ok) {
             return new Response(
@@ -74,12 +71,8 @@ export async function GET(req) {
         }
 
         const properties = await sfDataResults.json();
-
-        console.log(`${neighborhood} returned ${properties.length} properties`);
-        console.log("First 3 properties:", properties.slice(0, 3));
-
         const topStreets = getTopStreets(properties, count);
-        console.log(`${neighborhood} top streets:`, topStreets);
+
         return new Response(JSON.stringify(topStreets), {
             headers: { "Content-Type": "application/json" },
         });
